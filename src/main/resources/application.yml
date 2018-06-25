@@ -1,0 +1,9 @@
+spring:
+  main:
+    banner-mode: "off"
+
+downloader:
+  scheme: https
+  baseUrl: newsapi.org
+  patch: /v2/top-headlines
+  apiKey: apiKey
