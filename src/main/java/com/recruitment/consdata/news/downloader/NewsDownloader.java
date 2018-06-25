@@ -20,7 +20,7 @@ import java.util.List;
 @Service
 @ConfigurationProperties(prefix = "downloader")
 public class NewsDownloader {
-    private RestTemplate restTemplate;
+    private RestTemplate restTemplate = new RestTemplate();
     private String scheme;
     private String baseUrl;
     private String path;
@@ -32,16 +32,18 @@ public class NewsDownloader {
         this.newsModelMapper = newsModelMapper;
     }
 
-    public List<News> getList(String category, String country) {
-        ResponseDto response = download(category, country);
-
-        return newsModelMapper.map(response.getArticles(), new TypeToken<List<News>>() {}.getType());
+    public List<News> getList(String country) {
+        URI uri = prepareURI(country, null);
+        return download(uri);
     }
 
-    public ResponseDto download(String category, String country) {
-        URI uri = prepareURI(category, country);
+    public List<News> getList(String country, String category) {
+        URI uri = prepareURI(country, category);
+        return download(uri);
+    }
 
-        return prepareAndGetRestTemplate()
+    private List<News> download(URI uri) {
+        ResponseDto response = restTemplate
                 .exchange(
                         uri,
                         HttpMethod.GET,
@@ -50,35 +52,27 @@ public class NewsDownloader {
                 )
                 .getBody();
 
+        return newsModelMapper.map(response.getArticles(), new TypeToken<List<News>>() {}.getType());
     }
 
     private HttpEntity<String> getHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
 
         return new HttpEntity<>("parameters", headers);
     }
 
-
-    private RestTemplate prepareAndGetRestTemplate() {
-        if (null != restTemplate) {
-            return restTemplate;
-        }
-
-        return new RestTemplate();
-    }
-
-    private URI prepareURI(String category, String country) {
+    private URI prepareURI(String country, String category) {
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance();
         uriComponentsBuilder.scheme(scheme).host(baseUrl).path(path).queryParam("apiKey", apiKey);
 
-        if (category != null) {
-            uriComponentsBuilder.queryParam("category", category);
-        }
-
         if (country != null) {
             uriComponentsBuilder.queryParam("country", country);
+        }
+
+        if (category != null) {
+            uriComponentsBuilder.queryParam("category", category);
         }
 
         return uriComponentsBuilder.build().toUri();

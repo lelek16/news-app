@@ -1,11 +1,14 @@
 package com.recruitment.consdata.news.http;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.recruitment.consdata.news.model.News;
 
 import java.util.List;
 
 public class ResponseDto {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String country;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String category;
     private List<News> articles;
 

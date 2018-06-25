@@ -1,11 +1,14 @@
 package com.recruitment.consdata.news.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class News {
     private String author;
     private String title;
     private String description;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date date;
     private String sourceName;
     private String articleUrl;
