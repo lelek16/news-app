@@ -8,4 +8,4 @@ downloader:
   scheme: https
   baseUrl: newsapi.org
   path: /v2/top-headlines
-  apiKey: ea6d24a79e5b40b1ac1334ac65e35073
+  apiKey: apiKey
